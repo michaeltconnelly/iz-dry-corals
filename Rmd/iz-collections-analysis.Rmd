@@ -13,10 +13,8 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r}
 library("tidyverse")
 ```
-other commands go here...
-```{r}
-specimens <- read_csv("./data/Pocillopora_IZCollection.csv", col_types = cols_nmnh)
-```
+## Data Import
+change data types
 ```{r nmnh import}
 cols_nmnh <- cols(
   `Catalog Number` = col_character(),
@@ -78,6 +76,11 @@ cols_nmnh <- cols(
   EZID = col_character()
 )
 ```
+other commands go here...
+```{r}
+specimens <- read_csv("./data/Pocillopora_IZCollection.csv", col_types = cols_nmnh)
+```
+
 ## Data tidying steps
 ```{r}
 
