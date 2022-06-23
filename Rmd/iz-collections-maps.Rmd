@@ -1,0 +1,129 @@
+---
+title: "iz-collections-analysis"
+author: "Mike Connelly"
+date: "6/15/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r}
+library("tidyverse")
+```
+## Data Import
+change data types
+```{r nmnh import}
+cols_nmnh <- cols(
+  `Catalog Number` = col_character(),
+  `Kind of Object` = col_character(),
+  `Scientific Name` = col_character(),
+  Family = col_character(),
+  Phylum = col_character(),
+  Class = col_character(),
+  Order = col_character(),
+  `Identified By` = col_character(),
+  `Date Identified` = col_character(),
+  `Current Identification` = col_character(),
+  `Other Identifications` = col_character(),
+  `Type Status` = col_character(),
+  `Type Citations` = col_character(),
+  `Kind of Voucher` = col_character(),
+  Classification = col_character(),
+  `Common Name` = col_character(),
+  `Collection Name` = col_character(),
+  `Specimen Count` = col_character(),
+  `Sex and Stage` = col_character(),
+  Preparation = col_logical(),
+  `Station Number` = col_character(),
+  `Collector(s)` = col_character(),
+  `Date Collected` = col_character(),
+  `Collection Method` = col_character(),
+  Ocean = col_character(),
+  `Sea/Gulf` = col_character(),
+  `Bay/Sound` = col_character(),
+  Country = col_character(),
+  `Province/State` = col_character(),
+  `District/County` = col_character(),
+  `City/Town` = col_character(),
+  `Precise Locality` = col_character(),
+  `Centroid Latitude` = col_double(),
+  `Centroid Longitude` = col_double(),
+  `Elevation (m)` = col_double(),
+  `Expedition Name` = col_character(),
+  Vessel = col_character(),
+  Cruise = col_character(),
+  `River Basin` = col_logical(),#
+  `Microhabitat Description` = col_character(),
+  `Depth (m)` = col_character(),
+  `Depth Notes` = col_character(),
+  `Geologic Age` = col_character(),#
+  Notes = col_character(),
+  `Field Number(s)` = col_character(),
+  `Other Numbers (Type : Value)` = col_character(),
+  `Accession Number` = col_character(),
+  `Genetic Sample Type` = col_character(),
+  `Biorepository Number` = col_character(),
+  `Specimen Voucher Number` = col_logical(),#
+  `Bold ID` = col_logical(),#
+  `GenBank Numbers` = col_logical(),#
+  `Preservation Method` = col_logical(),#
+  `Embargo?` = col_character(),#
+  `Depleted?` = col_logical(),
+  `Record Last Modified` = col_character(),
+  EZID = col_character()
+)
+```
+other commands go here...
+```{r}
+specimens <- read_csv("./data/Pocillopora_IZCollection.csv", col_types = cols_nmnh)
+```
+
+## Data tidying steps
+```{r}
+
+```
+
+## Exploratory data visualization
+```{r}
+# Explore counts of Pocillopora accepted species 
+nmnh_country_counts <- specimens %>% 
+  group_by(`Country`) %>% 
+  count() 
+
+nmnh_country_counts %>% 
+  ggplot(aes(x = Country, y = n)) + geom_col() + coord_flip()
+  
+```
+
+## Dry Specimens for DNA extraction
+```{r}
+specimens_dna_numbers <- c("USNM 90521", "USNM 73953", "USNM 99470", "USNM 1260495",
+                     "USNM 77303", "USNM 73759", "USNM 1206302", "USNM 1260508",
+                     "USNM 1260304", "USNM 1132559", "USNM 1260298", "USNM 99471", "USNM 99472")
+
+specimens_dna <- specimens %>% 
+  filter(`Catalog Number` %in% specimens_dna_numbers)
+
+write_excel_csv(specimens_dna, "./outputs/nhre_pocillopora_dna.csv")
+```
+```{r}
+catalog_numbers <- c("1260495", "1260298", "99470", "99471", "1260508", "1132559", "73759", "73593", "77303", "1260304", "1202361", "1260713", "1260303", "1260297", "1199340", "1132560", "1260296", "99474", "78772", "47848", "81555", "81554", "1128567", "1208931", "1260710", "91584", "91576", "91584", "91585", "90516", "1200218", "1131906", "44398", "81619", "99476", "80306", "91586", "1202377", "44371", "1207586", "80293", "1204936", "80293", "1204936", "376791", "19246", "78680", "1260305", "1442510", "1260809", "1442510", "1260809", "1260852", "1260847", "1260297", "91579", "1207899", "90521", "91084", "1204583")
+catalog_numbers_usnm <- paste("USNM", unique(catalog_numbers)) 
+```
+```{r}
+specimens_dna <- specimens %>% 
+  filter(`Catalog Number` %in% catalog_numbers_usnm)
+```
+```{r}
+# Explore counts of Pocillopora countries among extracted specimens
+dna_country_counts <- specimens_dna %>% 
+  group_by(`Country`) %>% 
+  count() 
+#
+dna_country_counts %>% 
+  ggplot(aes(x = Country, y = n)) + geom_col() + coord_flip()
+  
+```
